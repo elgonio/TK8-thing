@@ -9,6 +9,8 @@ readme = "README.md"
 python = "^3.12"
 pandas = "^2.2.0"
 matplotlib = "^3.8.3"
+seaborn = "^0.13.2"
+pyyaml = "^6.0.1"
 
 
 [tool.poetry.group.dev.dependencies]
