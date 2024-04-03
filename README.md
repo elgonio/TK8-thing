@@ -11,43 +11,47 @@ In previous investigations of this nature the repo owner has monitored and mimic
 Instead they used cheat engine to pull the replay list from the games memory directly. Using a combination of cheat engine and autohotkey, they refreshed the replay list (sorted by new) every 3 minutes to obtain a large number of games. 
 
 ## Installation
-> List any dependencies and provide instructions on how to install them.
 
 If you are just interested in the data, then no dependencies are needed since the data is saved in `complete_JSONS_[date]`. 
 
-Other wise 
+Otherwise, to gather data you will need [cheat engine](https://www.cheatengine.org/) to load and run the lua script used to gather data.
+
+To run the python code for the data analysis and graph generation you simply need to install dependencies using [poetry](https://python-poetry.org/)
 
 ## Usage
-> Provide instructions on how to use the project, including how to run any scripts or notebooks.
 
 **Extracting match data from Tekken 8** 
 The lua script is used in cheat engine to extract the json to a file on disk. You should edit this to change the directory if you are using this.
-Note that due to memory being overwritten less than hald of the files generated this way are usable. You want to look for files with filesize greater than 720KB.
+Note that due to memory being overwritten less than half of the files generated this way are usable. You want to look for files with filesize greater than 720KB.
+
+Further processing may be required on these files too as some of them still come out as malformed JSONs.
 
 ## Data
-> Describe the datasets used in the analysis, including their sources and any preprocessing steps performed.
 
 The data is saved in `complete_JSONS_[date]`. Each json contains 999 games.
-A data dictionary is contained in `enums.py`.
+A dictionary which explains some of the mappings from the internal game variables to more readable forms is
+available in `enums.py`.
+
 
 ## Analysis
-> Explain the methodology used for the analysis, including any algorithms or techniques implemented.
 
-The python notebook is simply used to do some basic analysis and generate charts
+The python notebook is simply used to do some basic analysis and generate charts. 
+Mostly we want to look at rank distributions character play rates and character win rates.
 
-## Results
-> Summarize the key findings and insights obtained from the analysis.
-
-Current version contained in `data_processing.ipynb`
 
 ## Future Work
-> Discuss any potential future improvements or additional analyses that could be performed.
 
 Potential ideas:
-- [ ] automate reporting and data (saves time / effort) 
-- [ ] canvas feedback from Reddit 
-- [ ] use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
-- [ ] more accessible formt. dashboard? project page?
+- [ ] Store raw data in some online hosting service. Maybe just an S3 bucket.
+- [ ] Automate data gathering
+- [ ] Generate more charts/analysis
+    - [ ] Per character rank distribution
+    - [ ] Matchup table
+    - [ ] Most popular secondary characters
+    - [ ] Some measure of "closeness of games" by looking at how many rounds are played in the average game
+- [ ] Present data more accessible formt. dashboard? project page?
+- [ ] Canvas feedback from Reddit 
+- [ ] Use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
 
 ## Contributing
 
@@ -70,6 +74,8 @@ We encourage contributions from the community! If you'd like to fix a bug, add a
 3. Test your changes thoroughly.
 4. Create a pull request, describing the changes you've made and the rationale behind them.
 5. Await feedback and be prepared to address any requested changes.
+
+Using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) is encouraged.
 
 ### License
 
