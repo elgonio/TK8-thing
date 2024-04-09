@@ -17,6 +17,9 @@ def read_data(folder_path):
 				with open(file_path) as f:
 					# remove any preceding or trailing whitespace
 					json_String = f.read().strip()
+					if json_String[-1] != '}':
+						print(f'Final character is not a closing bracket instead it is {json_String[-1]}')
+						break
 					data = json.loads(json_String)
 					master_list.extend(data['replayDetailList']) # Combine the lengths into the master list
 					success_count += 1

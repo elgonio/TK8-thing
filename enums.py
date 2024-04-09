@@ -49,7 +49,8 @@ char_dict = {
 	'chr_0033': 'Reina',
 	'chr_0034': 'Azucena',
 	'chr_0035': 'Victor',
-	'chr_0036': 'Raven'
+	'chr_0036': 'Raven',
+    'chr_0038': 'Eddy',
 }
 
 battle_type_dict = {

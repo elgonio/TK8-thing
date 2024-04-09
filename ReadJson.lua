@@ -35,7 +35,7 @@ for i = 0, 100 do
         -- print(address)
         -- print(result)
     
-        writeFile('D:/coding stuff/CE/' .. os.time() ..'_' .. i ..'.json', result)
+        writeFile('D:/coding stuff/CE/data/' .. os.time() ..'_' .. i ..'.json', result)
     end
     unpause()
     sleep(120000)

@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "ce"
+name = "TK8-thing"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Omer Elgoni <omer.elgoni@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -11,6 +11,7 @@ pandas = "^2.2.0"
 matplotlib = "^3.8.3"
 seaborn = "^0.13.2"
 pyyaml = "^6.0.1"
+scipy = "^1.13.0"
 
 
 [tool.poetry.group.dev.dependencies]

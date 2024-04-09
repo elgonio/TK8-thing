@@ -1,6 +1,6 @@
 from enums import char_dict, dan_names_dict
 from collections import Counter
-import math
+from scipy.stats import binom
 
 # pandas dataframe columns
 # Data columns (total 35 columns):
@@ -100,8 +100,8 @@ def get_unique_players(df):
 def split_unique_players(unique_players):
     # split the unique players into 3 categories according to their highest rank
     # 1. Beginners: rank 1 - 11
-    # 2. Intermediate: rank 12 - 17
-    # 3. Advanced: rank 18+
+    # 2. Intermediate: rank 12 - 20
+    # 3. Advanced: rank 21+
 	
     beginners = {}
     intermediate = {}
@@ -109,7 +109,7 @@ def split_unique_players(unique_players):
     for user_id, data in unique_players.items():
         if data['rank'] <= 11:
             beginners[user_id] = data
-        elif data['rank'] <= 17:
+        elif data['rank'] <= 21:
             intermediate[user_id] = data
         else:
             advanced[user_id] = data
@@ -158,12 +158,12 @@ def split_replays_into_categories(master_df):
     # get games where both gamers are beginners i.e rank 1 - 11
     beginners = master_df[(master_df['1pRank'] <= 11) & (master_df['2pRank'] <= 11)]
     # get games where both gamers are intermediate i.e rank 12 - 17
-    intermediate = master_df[((master_df['1pRank'] > 11) & (master_df['1pRank'] <= 17)) & ((master_df['2pRank'] > 11) & (master_df['2pRank'] <= 17))]
-    # get games where both gamers are advanced i.e rank 18+
-    advanced = master_df[(master_df['1pRank'] > 17) & (master_df['2pRank'] > 17)]
+    intermediate = master_df[((master_df['1pRank'] > 11) & (master_df['1pRank'] <= 21)) & ((master_df['2pRank'] > 11) & (master_df['2pRank'] <= 21))]
+    # get games where both gamers are advanced i.e rank 25+
+    advanced = master_df[(master_df['1pRank'] > 21) & (master_df['2pRank'] > 21)]
     return beginners, intermediate, advanced
     
-def calculate_win_rates(master_df):
+def calculate_win_rates_with_confidence_interval(master_df, confidence_level=0.95):
     # remove mirror matches
     mirror_matches = master_df[master_df['1pCharaId'] == master_df['2pCharaId']]
     master_df = master_df[master_df['1pCharaId'] != master_df['2pCharaId']]
@@ -186,31 +186,15 @@ def calculate_win_rates(master_df):
 
     # calculate the win rates
     win_rates = {char_dict[k]: 0 for k in char_counts.keys()}
+    intervals = {char_dict[k]: (0,0) for k in char_counts.keys()}
     for char, count in char_counts.items():
         if count != 0:
             win_rates[char_dict[char]] = win_counts[char] / count
+            lower, upper = binom.interval(confidence_level, count, win_rates[char_dict[char]])
+            intervals[char_dict[char]] = (lower/count, upper/count)
 
     # sort the win rates dictionary
     win_rates = {k: v for k, v in sorted(win_rates.items(), key=lambda item: item[1], reverse=True)}
 
-    # replace character ids with character names for char_counts
-    char_counts_human_readable_names = {char_dict[k]: v for k, v in char_counts.items()} 
-    confidence_intervals = calculate_confidence(win_rates, char_counts_human_readable_names)
-    
-    return win_rates, confidence_intervals
+    return win_rates, intervals
 
-def calculate_confidence(win_rates, char_counts):
-    confidence_intervals = {}
-    z = 1.96  # Z-score for 95% confidence level
-    
-
-    for char, win_rate in win_rates.items():
-        count = char_counts[char]
-        if count != 0:
-            standard_error = math.sqrt((win_rate * (1 - win_rate)) / count)
-            margin_of_error = z * standard_error
-            lower_bound = win_rate - margin_of_error
-            upper_bound = win_rate + margin_of_error
-            confidence_intervals[char] = (lower_bound, upper_bound)
-
-    return confidence_intervals

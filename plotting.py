@@ -9,29 +9,33 @@ from collections import Counter
 
 from enums import dan_names_dict
 
-def plot_win_rates(win_rates, bracket_name=''):
+def plot_win_rates(win_rates, bracket_name='', ylim=(0.45, 0.7)):
     # plot the win rates with confidence intervals
     plt.figure(figsize=(10, 5))
     sns.barplot(x=list(win_rates.keys()), y=list(win_rates.values()))
     plt.title(f'Win Rates_{bracket_name}')
     plt.xlabel('Character')
     plt.ylabel('Win Rate')
-    plt.ylim(0.44, 0.6)
+    plt.ylim(ylim[0], ylim[1])
     plt.xticks(rotation=90)
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, f'win_rates_with_confidence_intervals_{bracket_name}.png'))
+    plt.savefig(os.path.join(plots_dir, f'win_rates_{bracket_name}.png'))
     plt.show()
 
-def plot_win_rates_with_confidence_intervals(win_rates, confidence_intervals, bracket_name=''):
+def plot_win_rates_with_confidence_intervals(win_rates, confidence_intervals, bracket_name='', ylim=(0.45, 0.7)):
     # plot the win rates with confidence intervals
     plt.figure(figsize=(10, 5))
     sns.barplot(x=list(win_rates.keys()), y=list(win_rates.values()))
-    for i, (win_rate, (lower_bound, upper_bound)) in enumerate(zip(win_rates.values(), confidence_intervals.values())):
+    for i in range(len(win_rates)):
+        key = list(win_rates.keys())[i]
+        win_rate = win_rates[key]
+        lower_bound = confidence_intervals[key][0]
+        upper_bound = confidence_intervals[key][1]
         plt.errorbar(i, win_rate, yerr=[[win_rate - lower_bound], [upper_bound-win_rate]], capsize=5, color='black')
     plt.title(f'Win Rates with 95% Confidence Intervals_{bracket_name}')
     plt.xlabel('Character')
     plt.ylabel('Win Rate')
-    plt.ylim(0.44, 0.6)
+    plt.ylim(ylim[0], ylim[1])
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.savefig(os.path.join(plots_dir, f'win_rates_with_confidence_intervals_{bracket_name}.png'))
