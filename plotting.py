@@ -59,18 +59,18 @@ def plot_most_popular_characters(character_counts, bracket_name='', date_range='
     plt.savefig(os.path.join(plots_dir, f'most_popular_characters_{bracket_name}.png'))
     plt.show()
 
-def plot_rank_distribution(rank_counts, date_range='unknown'):
+def plot_rank_distribution(rank_counts, date_range='unknown', title='Rank Distribution'):
     # plot the rank distribution
     rank_counts = Counter(rank_counts)
     rank_counts = dict(rank_counts)
     rank_counts = {f'{dan_names_dict[k]} ({k})': v for k, v in sorted(rank_counts.items(), key=lambda item: item[0], reverse=False)}
     plt.figure(figsize=(10, 5))
     sns.barplot(x=list(rank_counts.keys()), y=list(rank_counts.values()))
-    plt.title('Rank Distribution')
+    plt.title(title)
     plt.text(0.99, 1.05, date_range, verticalalignment='top', horizontalalignment='right', transform=plt.gca().transAxes)
     plt.xlabel('Rank')
     plt.ylabel('Count')
     plt.xticks(rotation=90)
     plt.tight_layout()
-    plt.savefig(os.path.join(plots_dir, 'rank_distribution.png'))
+    plt.savefig(os.path.join(plots_dir, '{title}.png'))
     plt.show()
