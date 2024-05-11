@@ -45,11 +45,11 @@ Potential ideas:
 - [ ] Store raw data in some online hosting service. Maybe just an S3 bucket.
 - [ ] Automate data gathering
 - [ ] Generate more charts/analysis
-    - [ ] Per character rank distribution
+    - [X] Per character rank distribution
     - [ ] Matchup table
     - [ ] Most popular secondary characters
-    - [ ] Some measure of "closeness of games" by looking at how many rounds are played in the average game
-- [ ] Present data more accessible formt. dashboard? project page?
+    - [X] Some measure of "closeness of games" by looking at how many rounds are played in the average game
+- [ ] Present data more accessible format. dashboard? project page?
 - [ ] Canvas feedback from Reddit 
 - [ ] Use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
 
