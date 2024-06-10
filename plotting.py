@@ -12,6 +12,7 @@ from enums import dan_names_dict
 def plot_win_rates(win_rates, bracket_name='', ylim=(0.45, 0.7), date_range='unknown'):
     # plot the win rates with confidence intervals
     plt.figure(figsize=(10, 5))
+    plt.axhline(y=0.5, color='black', linestyle='--', alpha=0.3)
     sns.barplot(x=list(win_rates.keys()), y=list(win_rates.values()))
     plt.title(f'Win Rates_{bracket_name}')
     plt.text(0.99, 1.05, date_range, verticalalignment='top', horizontalalignment='right', transform=plt.gca().transAxes)
@@ -26,6 +27,7 @@ def plot_win_rates(win_rates, bracket_name='', ylim=(0.45, 0.7), date_range='unk
 def plot_win_rates_with_confidence_intervals(win_rates, confidence_intervals, bracket_name='', ylim=(0.45, 0.7), date_range='unknown'):
     # plot the win rates with confidence intervals
     plt.figure(figsize=(10, 5))
+    plt.axhline(y=0.5, color='black', linestyle='--', alpha=0.3)
     sns.barplot(x=list(win_rates.keys()), y=list(win_rates.values()))
     for i in range(len(win_rates)):
         key = list(win_rates.keys())[i]

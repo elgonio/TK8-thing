@@ -96,6 +96,13 @@ def get_unique_players(df):
 
 	return unique_players
 
+# we consider the lowest 25% of the ranks as beginners, and the top 10% as advanced
+# the rest are intermediate
+
+intermediate_threshold = 12
+advanced_threshold = 21
+
+
 # split the unique players into 3 categories according to their highest rank
 def split_unique_players(unique_players):
     # split the unique players into 3 categories according to their highest rank
@@ -107,9 +114,9 @@ def split_unique_players(unique_players):
     intermediate = {}
     advanced = {}
     for user_id, data in unique_players.items():
-        if data['rank'] <= 11:
+        if data['rank'] <= intermediate_threshold:
             beginners[user_id] = data
-        elif data['rank'] <= 21:
+        elif data['rank'] <= advanced_threshold:
             intermediate[user_id] = data
         else:
             advanced[user_id] = data
@@ -152,15 +159,16 @@ def calculate_percentiles(rank_counts):
     return percentiles
 
 
+
 # split replays into 3 categories according to the rank of the players
 def split_replays_into_categories(master_df):
     # split replays into 3 categories according to the rank of the players
     # get games where both gamers are beginners i.e rank 1 - 11
-    beginners = master_df[(master_df['1pRank'] <= 11) & (master_df['2pRank'] <= 11)]
+    beginners = master_df[(master_df['1pRank'] <= intermediate_threshold) & (master_df['2pRank'] <= intermediate_threshold)]
     # get games where both gamers are intermediate i.e rank 12 - 17
-    intermediate = master_df[((master_df['1pRank'] > 11) & (master_df['1pRank'] <= 21)) & ((master_df['2pRank'] > 11) & (master_df['2pRank'] <= 21))]
+    intermediate = master_df[((master_df['1pRank'] > intermediate_threshold) & (master_df['1pRank'] <= advanced_threshold)) & ((master_df['2pRank'] > intermediate_threshold) & (master_df['2pRank'] <= advanced_threshold))]
     # get games where both gamers are advanced i.e rank 25+
-    advanced = master_df[(master_df['1pRank'] > 21) & (master_df['2pRank'] > 21)]
+    advanced = master_df[(master_df['1pRank'] > advanced_threshold) & (master_df['2pRank'] > advanced_threshold)]
     return beginners, intermediate, advanced
     
 def calculate_win_rates_with_confidence_interval(master_df, confidence_level=0.95):
