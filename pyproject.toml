@@ -12,6 +12,7 @@ matplotlib = "^3.8.3"
 seaborn = "^0.13.2"
 pyyaml = "^6.0.1"
 scipy = "^1.13.0"
+requests = "^2.32.3"
 
 
 [tool.poetry.group.dev.dependencies]

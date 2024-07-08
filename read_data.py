@@ -17,10 +17,8 @@ def read_data(folder_path):
 				with open(file_path) as f:
 					# remove any preceding or trailing whitespace
 					json_String = f.read().strip()
-					if json_String[-1] != '}':
-						print(f'Final character is not a closing bracket instead it is {json_String[-1]}')
 					data = json.loads(json_String)
-					master_list.extend(data['replayDetailList']) # Combine the lengths into the master list
+					master_list.extend(data) # Combine the lengths into the master list
 					success_count += 1
 			except Exception as e:
 				# print(f'Error processing file: {filename}')
@@ -35,7 +33,7 @@ def read_data(folder_path):
 def read_data_into_dataframe(folder_path):
 	master_list = read_data(folder_path)
 	master_df = pd.DataFrame(master_list)
-	return master_df.drop_duplicates(subset='battleId', keep="last")
+	return master_df.drop_duplicates(subset='battle_id', keep="last")
 
 
 # Example of a match

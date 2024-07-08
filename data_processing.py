@@ -3,45 +3,34 @@ from collections import Counter
 from scipy.stats import binom
 
 # pandas dataframe columns
-# Data columns (total 35 columns):
-#  #   Column         Dtype 
-# ---  ------         ----- 
-#  0   battleId       object
-#  1   battleType     int64 
-#  2   gameVersion    int64 
-#  3   winResult      int64 
-#  4   totalRoundNum  int64 
-#  5   battleAt       int64 
-#  6   viewNum        int64 
-#  7   stageId        object
-#  8   highlightFlag  bool  
-#  9   1pUserId       object
-#  10  1pPlayerName   object
-#  11  1pPolarisId    object
-#  12  1pOnlineId     object
-#  13  1pNgWordFlag   int64 
-#  14  1pPlatform     int64 
-#  15  1pRank         int64 
-#  16  1pTekkenPower  int64 
-#  17  1pCharaId      object
-#  18  1pWinRoundNum  int64 
-#  19  1pTagType01    int64 
-#  20  1pTagType02    int64 
-#  21  1pTagType03    int64 
-#  22  2pUserId       object
-#  23  2pPlayerName   object
-#  24  2pPolarisId    object
-#  25  2pOnlineId     object
-#  26  2pNgWordFlag   int64 
-#  27  2pPlatform     int64 
-#  28  2pRank         int64 
-#  29  2pTekkenPower  int64 
-#  30  2pCharaId      object
-#  31  2pWinRoundNum  int64 
-#  32  2pTagType01    int64 
-#  33  2pTagType02    int64 
-#  34  2pTagType03    int64 
-# dtypes: bool(1), int64(22), object(12)
+# Data columns (total 24 columns):
+#  #   Column            Dtype 
+# ---  ------            ----- 
+#  0   battle_at         int64 
+#  1   battle_id         object
+#  2   battle_type       int64 
+#  3   game_version      int64 
+#  4   p1_chara_id       int64 
+#  5   p1_name           object
+#  6   p1_polaris_id     object
+#  7   p1_power          int64 
+#  8   p1_rank           int64 
+#  9   p1_rating_before  int64 
+#  10  p1_rating_change  int64 
+#  11  p1_rounds         int64 
+#  12  p1_user_id        int64 
+#  13  p2_chara_id       int64 
+#  14  p2_name           object
+#  15  p2_polaris_id     object
+#  16  p2_power          int64 
+#  17  p2_rank           int64 
+#  18  p2_rating_before  int64 
+#  19  p2_rating_change  int64 
+#  20  p2_rounds         int64 
+#  21  p2_user_id        int64 
+#  22  stage_id          int64 
+#  23  winner            int64 
+# dtypes: int64(19), object(5)
 
 
 # get unique players with their highest rank and character
@@ -51,56 +40,52 @@ def get_unique_players(df):
 	unique_players = {}
 	for index, row in df.iterrows():
 		# 1p
-		if row['1pUserId'] not in unique_players:
-			unique_players[row['1pUserId']] = {
-				'rank': row['1pRank'],
-				'char': row['1pCharaId'],
-				'platform': row['1pPlatform'],
-				'tekken_power': row['1pTekkenPower'],
-				'characters': {row['1pCharaId']},
+		if row['p1_polaris_id'] not in unique_players:
+			unique_players[row['p1_polaris_id']] = {
+				'rank': row['p1_rank'],
+				'char': row['p1_chara_id'],
+				'tekken_power': row['p1_power'],
+				'characters': {row['p1_chara_id']},
 			}
 		else:
 			# we have seen this player before but we want to capture all the characters they have played
-			unique_players[row['1pUserId']]['characters'].add(row['1pCharaId'])
+			unique_players[row['p1_polaris_id']]['characters'].add(row['p1_chara_id'])
 
 			# if the current rank is higher than the previous rank, update the rank and character
-			if row['1pRank'] > unique_players[row['1pUserId']]['rank']:
-				unique_players[row['1pUserId']]['rank'] = row['1pRank']
-				unique_players[row['1pUserId']]['char'] = row['1pCharaId']
+			if row['p1_rank'] > unique_players[row['p1_polaris_id']]['rank']:
+				unique_players[row['p1_polaris_id']]['rank'] = row['p1_rank']
+				unique_players[row['p1_polaris_id']]['char'] = row['p1_chara_id']
 
 			# Let's also capture the highest tekken power
-			if row['1pTekkenPower'] > unique_players[row['1pUserId']]['tekken_power']:
-				unique_players[row['1pUserId']]['tekken_power'] = row['1pTekkenPower']
+			if row['p1_power'] > unique_players[row['p1_polaris_id']]['tekken_power']:
+				unique_players[row['p1_polaris_id']]['tekken_power'] = row['p1_power']
 		# 2p
-		if row['2pUserId'] not in unique_players:
-			unique_players[row['2pUserId']] = {
-				'rank': row['2pRank'],
-				'char': row['2pCharaId'],
-				'platform': row['2pPlatform'],
-				'tekken_power': row['2pTekkenPower'],
-				'characters': {row['2pCharaId']},
+		if row['p2_polaris_id'] not in unique_players:
+			unique_players[row['p2_polaris_id']] = {
+				'rank': row['p2_rank'],
+				'char': row['p2_chara_id'],
+				'tekken_power': row['p2_power'],
+				'characters': {row['p2_chara_id']},
 			}
 		else:
 			# we have seen this player before but we want to capture all the characters they have played
-			unique_players[row['2pUserId']]['characters'].add(row['2pCharaId'])
+			unique_players[row['p2_polaris_id']]['characters'].add(row['p2_chara_id'])
 
 			# if the current rank is higher than the previous rank, update the rank and character
-			if row['2pRank'] > unique_players[row['2pUserId']]['rank']:
-				unique_players[row['2pUserId']]['rank'] = row['2pRank']
-				unique_players[row['2pUserId']]['char'] = row['2pCharaId']
+			if row['p2_rank'] > unique_players[row['p2_polaris_id']]['rank']:
+				unique_players[row['p2_polaris_id']]['rank'] = row['p2_rank']
+				unique_players[row['p2_polaris_id']]['char'] = row['p2_chara_id']
 
 			# Let's also capture the highest tekken power
-			if row['2pTekkenPower'] > unique_players[row['2pUserId']]['tekken_power']:
-				unique_players[row['1pUserId']]['tekken_power'] = row['2pTekkenPower']
+			if row['p2_power'] > unique_players[row['p2_polaris_id']]['tekken_power']:
+				unique_players[row['p1_polaris_id']]['tekken_power'] = row['p2_power']
 
 
 	return unique_players
 
-# we consider the lowest 25% of the ranks as beginners, and the top 10% as advanced
-# the rest are intermediate
-
 intermediate_threshold = 12
 advanced_threshold = 21
+master_threshold = 26
 
 
 # split the unique players into 3 categories according to their highest rank
@@ -113,15 +98,18 @@ def split_unique_players(unique_players):
     beginners = {}
     intermediate = {}
     advanced = {}
+    master = {}
     for user_id, data in unique_players.items():
         if data['rank'] <= intermediate_threshold:
             beginners[user_id] = data
         elif data['rank'] <= advanced_threshold:
             intermediate[user_id] = data
-        else:
+        elif data['rank'] <= master_threshold:
             advanced[user_id] = data
+        else:
+            master[user_id] = data
 			
-    return beginners, intermediate, advanced
+    return beginners, intermediate, advanced, master
 
 # get the most popular characters for a given category
 def get_most_popular_characters(unique_players):
@@ -164,33 +152,30 @@ def calculate_percentiles(rank_counts):
 def split_replays_into_categories(master_df):
     # split replays into 3 categories according to the rank of the players
     # get games where both gamers are beginners i.e rank 1 - 11
-    beginners = master_df[(master_df['1pRank'] <= intermediate_threshold) & (master_df['2pRank'] <= intermediate_threshold)]
+    beginners = master_df[(master_df['p1_rank'] <= intermediate_threshold) & (master_df['p2_rank'] <= intermediate_threshold)]
     # get games where both gamers are intermediate i.e rank 12 - 17
-    intermediate = master_df[((master_df['1pRank'] > intermediate_threshold) & (master_df['1pRank'] <= advanced_threshold)) & ((master_df['2pRank'] > intermediate_threshold) & (master_df['2pRank'] <= advanced_threshold))]
+    intermediate = master_df[((master_df['p1_rank'] > intermediate_threshold) & (master_df['p1_rank'] <= advanced_threshold)) & ((master_df['p2_rank'] > intermediate_threshold) & (master_df['p2_rank'] <= advanced_threshold))]
     # get games where both gamers are advanced i.e rank 25+
-    advanced = master_df[(master_df['1pRank'] > advanced_threshold) & (master_df['2pRank'] > advanced_threshold)]
-    return beginners, intermediate, advanced
+    advanced = master_df[(master_df['p1_rank'] > advanced_threshold) & (master_df['p1_rank'] <= master_threshold) & (master_df['p2_rank'] > advanced_threshold) & (master_df['p2_rank'] <= master_threshold)]
+
+    master = master_df[(master_df['p1_rank'] > master_threshold) & (master_df['p2_rank'] > master_threshold)]
+    return beginners, intermediate, advanced, master
     
 def calculate_win_rates_with_confidence_interval(master_df, confidence_level=0.95):
     # remove mirror matches
-    mirror_matches = master_df[master_df['1pCharaId'] == master_df['2pCharaId']]
-    master_df = master_df[master_df['1pCharaId'] != master_df['2pCharaId']]
+    mirror_matches = master_df[master_df['p1_chara_id'] == master_df['p2_chara_id']]
+    master_df = master_df[master_df['p1_chara_id'] != master_df['p2_chara_id']]
 
     print(f"Number of mirror matches: {len(mirror_matches)}")
 
-    # remove matches with draws
-    master_df = master_df[master_df['winResult'] != 3]
-    draws = master_df[master_df['winResult'] == 3]
-    print(f"Number of matches with draws: {len(draws)}")
-
-    # count the number of times each character appears in the 1pCharaId and 2pCharaId columns
-    char1_counts = Counter(master_df['1pCharaId'])
-    char2_counts = Counter(master_df['2pCharaId'])
+    # count the number of times each character appears in the p1_chara_id and p2_chara_id columns
+    char1_counts = Counter(master_df['p1_chara_id'])
+    char2_counts = Counter(master_df['p2_chara_id'])
     char_counts = char1_counts + char2_counts
 
     # count the number of times each character wins
-    win_counts = Counter(master_df[master_df['winResult'] == 1]['1pCharaId'])
-    win_counts += Counter(master_df[master_df['winResult'] == 2]['2pCharaId'])
+    win_counts = Counter(master_df[master_df['winner'] == 1]['p1_chara_id'])
+    win_counts += Counter(master_df[master_df['winner'] == 2]['p2_chara_id'])
 
     # calculate the win rates
     win_rates = {char_dict[k]: 0 for k in char_counts.keys()}
