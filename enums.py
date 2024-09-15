@@ -1,20 +1,20 @@
 stage_dict = {
-    'stg_0100': 'Arena',
-    'stg_0101': 'Arena Underground',
-    'stg_0200': 'Urban Square',
-    'stg_0201': 'Urban Square Evening',
-    'stg_0300': 'Yakushima',
-    'stg_0400': 'Coliseum of Fate',
-    'stg_0500': 'Rebel Hangar',
-    'stg_0700': 'Fallen Destiny',
-    'stg_0900': 'Descent into Subconscious',
-    'stg_1000': 'Sanctum',
-    'stg_1100': 'Into the Stratosphere',
-    'stg_1200': 'Ortiz Farm',
-    'stg_1300': 'Celebration On The Seine',
-    'stg_1400': 'Secluded Training Ground',
-    'stg_1500': 'Elegant Palace',
-    'stg_1600': 'Midnight Siege'
+     100: 'Arena',
+     101: 'Arena Underground',
+     200: 'Urban Square',
+     201: 'Urban Square Evening',
+     300: 'Yakushima',
+     400: 'Coliseum of Fate',
+     500: 'Rebel Hangar',
+     700: 'Fallen Destiny',
+     900: 'Descent into Subconscious',
+    1000: 'Sanctum',
+    1100: 'Into the Stratosphere',
+    1200: 'Ortiz Farm',
+    1300: 'Celebration On The Seine',
+    1400: 'Secluded Training Ground',
+    1500: 'Elegant Palace',
+    1600: 'Midnight Siege',
 }
 
 char_dict = {
@@ -51,6 +51,7 @@ char_dict = {
 	35: 'Victor',
 	36: 'Raven',
     38: 'Eddy',
+    39: 'Lidia',
 }
 
 battle_type_dict = {

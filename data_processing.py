@@ -87,13 +87,13 @@ intermediate_threshold = 12
 advanced_threshold = 21
 master_threshold = 26
 
-
 # split the unique players into 3 categories according to their highest rank
 def split_unique_players(unique_players):
     # split the unique players into 3 categories according to their highest rank
     # 1. Beginners: rank 1 - 11
     # 2. Intermediate: rank 12 - 20
     # 3. Advanced: rank 21+
+    # 4. Master: rank 26+
 	
     beginners = {}
     intermediate = {}

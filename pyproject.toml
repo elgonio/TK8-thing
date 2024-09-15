@@ -13,6 +13,8 @@ seaborn = "^0.13.2"
 pyyaml = "^6.0.1"
 scipy = "^1.13.0"
 requests = "^2.32.3"
+rustworkx = "^0.15.1"
+networkx = "^3.3"
 
 
 [tool.poetry.group.dev.dependencies]
