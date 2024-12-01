@@ -1,6 +1,8 @@
 from enums import char_dict, dan_names_dict
 from collections import Counter
 from scipy.stats import binom
+from multiprocessing import Pool, cpu_count
+import pandas as pd
 
 # pandas dataframe columns
 # Data columns (total 24 columns):
@@ -35,53 +37,63 @@ from scipy.stats import binom
 
 # get unique players with their highest rank and character
 def get_unique_players(df):
-	# get unique players
-	# first iterate over the df and get unique players
-	unique_players = {}
-	for index, row in df.iterrows():
-		# 1p
-		if row['p1_polaris_id'] not in unique_players:
-			unique_players[row['p1_polaris_id']] = {
-				'rank': row['p1_rank'],
-				'char': row['p1_chara_id'],
-				'tekken_power': row['p1_power'],
-				'characters': {row['p1_chara_id']},
-			}
-		else:
-			# we have seen this player before but we want to capture all the characters they have played
-			unique_players[row['p1_polaris_id']]['characters'].add(row['p1_chara_id'])
+    # get unique players
+    # first iterate over the df and get unique players
+    unique_players = {}
+    for index, row in df.iterrows():
+        # 1p
+        if row['p1_polaris_id'] not in unique_players:
+            unique_players[row['p1_polaris_id']] = {
+                'rank': row['p1_rank'],
+                'char': row['p1_chara_id'],
+                'tekken_power': row['p1_power'],
+                'area': row['p1_area_id'],
+                'lang': row['p2_lang'],
+                'region': row['p1_region_id'],
+                'rating': int(row['p1_rating_before']) + int(row['p1_rating_change']),
+                'characters': {row['p1_chara_id']},
+            }
+        else:
+            # we have seen this player before but we want to capture all the characters they have played
+            unique_players[row['p1_polaris_id']]['characters'].add(row['p1_chara_id'])
 
-			# if the current rank is higher than the previous rank, update the rank and character
-			if row['p1_rank'] > unique_players[row['p1_polaris_id']]['rank']:
-				unique_players[row['p1_polaris_id']]['rank'] = row['p1_rank']
-				unique_players[row['p1_polaris_id']]['char'] = row['p1_chara_id']
+            # if the current rank is higher than the previous rank, or the character is the same but the game is newer, update the rank and character
+            if row['p1_rank'] > unique_players[row['p1_polaris_id']]['rank'] or row['p1_chara_id'] == unique_players[row['p1_polaris_id']]['char']:
+                unique_players[row['p1_polaris_id']]['rank'] = row['p1_rank']
+                unique_players[row['p1_polaris_id']]['char'] = row['p1_chara_id']
+                unique_players[row['p1_polaris_id']]['rating'] = row['p1_rating_before'] + row['p1_rating_change']
 
-			# Let's also capture the highest tekken power
-			if row['p1_power'] > unique_players[row['p1_polaris_id']]['tekken_power']:
-				unique_players[row['p1_polaris_id']]['tekken_power'] = row['p1_power']
-		# 2p
-		if row['p2_polaris_id'] not in unique_players:
-			unique_players[row['p2_polaris_id']] = {
-				'rank': row['p2_rank'],
-				'char': row['p2_chara_id'],
-				'tekken_power': row['p2_power'],
-				'characters': {row['p2_chara_id']},
-			}
-		else:
-			# we have seen this player before but we want to capture all the characters they have played
-			unique_players[row['p2_polaris_id']]['characters'].add(row['p2_chara_id'])
+            # Let's also capture the highest tekken power
+            if row['p1_power'] > unique_players[row['p1_polaris_id']]['tekken_power']:
+                unique_players[row['p1_polaris_id']]['tekken_power'] = row['p1_power']
+        # 2p
+        if row['p2_polaris_id'] not in unique_players:
+            unique_players[row['p2_polaris_id']] = {
+                'rank': row['p2_rank'],
+                'char': row['p2_chara_id'],
+                'tekken_power': row['p2_power'],
+                'area': row['p2_area_id'],
+                'lang': row['p2_lang'],
+                'region': row['p2_region_id'],
+                'rating': int(row['p2_rating_before']) + int(row['p2_rating_change']),
+                'characters': {row['p2_chara_id']},
+            }
+        else:
+            # we have seen this player before but we want to capture all the characters they have played
+            unique_players[row['p2_polaris_id']]['characters'].add(row['p2_chara_id'])
 
-			# if the current rank is higher than the previous rank, update the rank and character
-			if row['p2_rank'] > unique_players[row['p2_polaris_id']]['rank']:
-				unique_players[row['p2_polaris_id']]['rank'] = row['p2_rank']
-				unique_players[row['p2_polaris_id']]['char'] = row['p2_chara_id']
+            # if the current rank is higher than the previous rank, or the character is the same but the game is newer, update the rank and character
+            if row['p2_rank'] > unique_players[row['p2_polaris_id']]['rank'] or row['p2_chara_id'] == unique_players[row['p2_polaris_id']]['char']:
+                unique_players[row['p2_polaris_id']]['rank'] = row['p2_rank']
+                unique_players[row['p2_polaris_id']]['char'] = row['p2_chara_id']
+                unique_players[row['p2_polaris_id']]['rating'] = int(row['p2_rating_before']) + int(row['p2_rating_change'])
 
-			# Let's also capture the highest tekken power
-			if row['p2_power'] > unique_players[row['p2_polaris_id']]['tekken_power']:
-				unique_players[row['p1_polaris_id']]['tekken_power'] = row['p2_power']
+            # Let's also capture the highest tekken power
+            if row['p2_power'] > unique_players[row['p2_polaris_id']]['tekken_power']:
+                unique_players[row['p2_polaris_id']]['tekken_power'] = row['p2_power']
 
 
-	return unique_players
+    return unique_players
 
 intermediate_threshold = 12
 advanced_threshold = 21
@@ -94,7 +106,7 @@ def split_unique_players(unique_players):
     # 2. Intermediate: rank 12 - 20
     # 3. Advanced: rank 21+
     # 4. Master: rank 26+
-	
+    
     beginners = {}
     intermediate = {}
     advanced = {}
@@ -108,7 +120,7 @@ def split_unique_players(unique_players):
             advanced[user_id] = data
         else:
             master[user_id] = data
-			
+            
     return beginners, intermediate, advanced, master
 
 # get the most popular characters for a given category
@@ -191,3 +203,92 @@ def calculate_win_rates_with_confidence_interval(master_df, confidence_level=0.9
 
     return win_rates, intervals
 
+def process_chunk(chunk):
+    unique_players = {}
+    for index, row in chunk.iterrows():
+        # Process player 1
+        if row['p1_polaris_id'] not in unique_players:
+            unique_players[row['p1_polaris_id']] = {
+                'rank': row['p1_rank'],
+                'char': row['p1_chara_id'],
+                'tekken_power': row['p1_power'],
+                'characters': {row['p1_chara_id']},
+                'last_battle': row['battle_at'],
+                'rating': row['p1_rating_before'] + row['p1_rating_change'],
+                'winrate': {row['p1_chara_id']: {'wins': 0, 'losses': 0}},
+                'area': row['p1_area_id'],
+            }
+        else:
+            unique_players[row['p1_polaris_id']]['characters'].add(row['p1_chara_id'])
+            if row['battle_at'] > unique_players[row['p1_polaris_id']]['last_battle']:
+                unique_players[row['p1_polaris_id']]['rank'] = row['p1_rank']
+                unique_players[row['p1_polaris_id']]['char'] = row['p1_chara_id']
+                unique_players[row['p1_polaris_id']]['tekken_power'] = row['p1_power']
+                unique_players[row['p1_polaris_id']]['last_battle'] = row['battle_at']
+                unique_players[row['p1_polaris_id']]['rating'] = row['p1_rating_before'] + row['p1_rating_change']
+            if row['p1_chara_id'] not in unique_players[row['p1_polaris_id']]['winrate']:
+                unique_players[row['p1_polaris_id']]['winrate'][row['p1_chara_id']] = {'wins': 0, 'losses': 0}
+
+        # Update win/loss for player 1
+        if row['winner'] == 1:
+            unique_players[row['p1_polaris_id']]['winrate'][row['p1_chara_id']]['wins'] += 1
+            unique_players[row['p2_polaris_id']]['winrate'][row['p2_chara_id']]['losses'] += 1
+        elif row['winner'] == 2:
+            unique_players[row['p1_polaris_id']]['winrate'][row['p1_chara_id']]['losses'] += 1
+            unique_players[row['p2_polaris_id']]['winrate'][row['p2_chara_id']]['wins'] += 1
+
+        # Process player 2
+        if row['p2_polaris_id'] not in unique_players:
+            unique_players[row['p2_polaris_id']] = {
+                'rank': row['p2_rank'],
+                'char': row['p2_chara_id'],
+                'tekken_power': row['p2_power'],
+                'characters': {row['p2_chara_id']},
+                'last_battle': row['battle_at'],
+                'rating': row['p2_rating_before'] + row['p2_rating_change'],
+                'winrate': {row['p2_chara_id']: {'wins': 0, 'losses': 0}},
+                'area': row['p2_area_id'],
+            }
+        else:
+            unique_players[row['p2_polaris_id']]['characters'].add(row['p2_chara_id'])
+            if row['battle_at'] > unique_players[row['p2_polaris_id']]['last_battle']:
+                unique_players[row['p2_polaris_id']]['rank'] = row['p2_rank']
+                unique_players[row['p2_polaris_id']]['char'] = row['p2_chara_id']
+                unique_players[row['p2_polaris_id']]['tekken_power'] = row['p2_power']
+                unique_players[row['p2_polaris_id']]['last_battle'] = row['battle_at']
+                unique_players[row['p2_polaris_id']]['rating'] = row['p2_rating_before'] + row['p2_rating_change']
+            if row['p2_chara_id'] not in unique_players[row['p2_polaris_id']]['winrate']:
+                unique_players[row['p2_polaris_id']]['winrate'][row['p2_chara_id']] = {'wins': 0, 'losses': 0}
+
+    return unique_players
+
+def get_unique_players_parallel(df):
+    num_processes = cpu_count()
+    chunk_size = len(df) // num_processes
+    chunks = [df[i:i + chunk_size] for i in range(0, len(df), chunk_size)]
+    
+    with Pool(processes=num_processes) as pool:
+        results = pool.map(process_chunk, chunks)
+    
+    # Merge results from all processes
+    final_results = {}
+    for result in results:
+        for player_id, data in result.items():
+            if player_id not in final_results:
+                final_results[player_id] = data
+            else:
+                final_results[player_id]['characters'].update(data['characters'])
+                if data['last_battle'] > final_results[player_id]['last_battle']:
+                    final_results[player_id]['rank'] = data['rank']
+                    final_results[player_id]['char'] = data['char']
+                    final_results[player_id]['tekken_power'] = data['tekken_power']
+                    final_results[player_id]['last_battle'] = data['last_battle']
+                    final_results[player_id]['rating'] = data['rating']
+                for char_id, win_loss in data['winrate'].items():
+                    if char_id not in final_results[player_id]['winrate']:
+                        final_results[player_id]['winrate'][char_id] = win_loss
+                    else:
+                        final_results[player_id]['winrate'][char_id]['wins'] += win_loss['wins']
+                        final_results[player_id]['winrate'][char_id]['losses'] += win_loss['losses']
+    
+    return final_results

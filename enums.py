@@ -52,6 +52,7 @@ char_dict = {
 	36: 'Raven',
     38: 'Eddy',
     39: 'Lidia',
+    40: 'Heihachi',
 }
 
 battle_type_dict = {
@@ -70,6 +71,24 @@ platform_dict = {
     3: 'pc',
     8: 'console/PS?', # PS?
     9: 'console/XBOX?', # Xbox?
+}
+
+region_dict = {
+    0: 'Asia',
+    1: 'Middle East',
+    2: 'Oceania',
+    3: 'America',
+    4: 'Europe',
+}
+
+# TODO: double check this
+area_dict = {
+    0: 'Asia',
+    1: 'Middle East',
+    2: 'Oceania',
+    3: 'America',
+    4: 'Europe',
+    5: 'africa',
 }
 
 dan_names_dict = {

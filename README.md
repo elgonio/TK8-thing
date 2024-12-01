@@ -6,29 +6,21 @@ Simple repo to keep some messy code and scripts used to generate some data about
 
 This project extracts data on matches from Tekken 8's online replay feature. This data is saved for re-use and analysis in this repo. 
 
-In previous investigations of this nature the repo owner has monitored and mimiced network calls made to the games server. Tekken however does not use HTTP so tools like fiddler or charles proxy are of no help here.
-
-Instead they used cheat engine to pull the replay list from the games memory directly. Using a combination of cheat engine and autohotkey, they refreshed the replay list (sorted by new) every 3 minutes to obtain a large number of games. 
-
 ## Installation
 
-If you are just interested in the data, then no dependencies are needed since the data is saved in `complete_JSONS_[date]`. 
+If you are just interested in the data, please check my most recent reddit post which will always have a link to the data used for that post.
 
-Otherwise, to gather data you will need [cheat engine](https://www.cheatengine.org/) to load and run the lua script used to gather data.
+Otherwise, to gather data you can run data_download.ipynb to get data from the api at https://wank.wavu.wiki/api/
 
 To run the python code for the data analysis and graph generation you simply need to install dependencies using [poetry](https://python-poetry.org/)
 
 ## Usage
 
-**Extracting match data from Tekken 8** 
-The lua script is used in cheat engine to extract the json to a file on disk. You should edit this to change the directory if you are using this.
-Note that due to memory being overwritten less than half of the files generated this way are usable. You want to look for files with filesize greater than 720KB.
-
-Further processing may be required on these files too as some of them still come out as malformed JSONs.
+Use data_download.ipynb to download data from https://wank.wavu.wiki/api/ and use data_processing.ipynb to calculate stats and graphs.
 
 ## Data
 
-The data is saved in `complete_JSONS_[date]`. Each json contains 999 games.
+The data is downloaded to a series of files named `./output/matches_yyyy-mm-dd.json`. Each json contains the games for the specified date.
 A dictionary which explains some of the mappings from the internal game variables to more readable forms is
 available in `enums.py`.
 
@@ -43,14 +35,12 @@ Mostly we want to look at rank distributions character play rates and character 
 
 Potential ideas:
 - [ ] Store raw data in some online hosting service. Maybe just an S3 bucket.
-- [ ] Automate data gathering
 - [ ] Generate more charts/analysis
     - [X] Per character rank distribution
     - [ ] Matchup table
     - [ ] Most popular secondary characters
     - [X] Some measure of "closeness of games" by looking at how many rounds are played in the average game
 - [ ] Present data more accessible format. dashboard? project page?
-- [ ] Canvas feedback from Reddit 
 - [ ] Use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
 
 ## Contributing

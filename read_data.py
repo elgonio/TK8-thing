@@ -36,6 +36,35 @@ def read_data_into_dataframe(folder_path):
 	return master_df.drop_duplicates(subset='battle_id', keep="last")
 
 
+def read_data_v2(folder_path):
+	master_list = []
+	failure_count = 0
+	success_count = 0
+	# Iterate over the files in the folder
+	for filename in os.listdir(folder_path):
+		if filename.endswith('.json'):
+			# print(f'Processing file: {filename}')
+			file_path = os.path.join(folder_path, filename)
+
+			# Load the JSON file
+			try:
+				master_list.append(pd.read_json(file_path))
+			except Exception as e:
+				# print(f'Error processing file: {filename}')
+				failure_count += 1
+
+	# Print the lengths of replayDetailList for each JSON file
+	print(f'Read {len(master_list)} games from {success_count} files')
+	print(f'{failure_count} files were unable to be read')
+
+	return master_list
+
+def read_data_into_dataframe_v2(folder_path):
+	master_list = read_data_v2(folder_path)
+	master_df = pd.concat(master_list)
+	return master_df.drop_duplicates(subset='battle_id', keep="last")
+
+
 # Example of a match
 # {
 #     "battleId": "f7c4c3ba9d9d4484a14d08c9eb1e1f9a",
