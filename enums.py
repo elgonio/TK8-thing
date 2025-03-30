@@ -15,6 +15,7 @@ stage_dict = {
     1400: 'Secluded Training Ground',
     1500: 'Elegant Palace',
     1600: 'Midnight Siege',
+    # TODO: add stages like phoenix gate and heihaichi's stage
 }
 
 char_dict = {
@@ -53,6 +54,7 @@ char_dict = {
     38: 'Eddy',
     39: 'Lidia',
     40: 'Heihachi',
+    41: 'Clive',
 }
 
 battle_type_dict = {
