@@ -24,6 +24,25 @@ The data is downloaded to a series of files named `./output/matches_yyyy-mm-dd.j
 A dictionary which explains some of the mappings from the internal game variables to more readable forms is
 available in `enums.py`.
 
+## Playtime Extraction
+
+Both the PSN and Steam ID extractor takes in a directory containing .json files as an argument and outputs a .json mapping of the user's name to their platform's respective playerID. This mapping is stored within the directory "playtime_data" which is where both playtime mappers will retreive it's argument. The playtime mapper takes the mapping .json as an argument and returns a final completed .json with the platform's playerID mapped to their respective playtime.
+
+CLI (Steam):
+python3 get_steam_id.py <directory-containing-json-battle-data> name_for_id_mapping.json
+python3 get_steam_hours.py name_for_id_mapping.json steam_playtime_mapping.json
+
+CLI (PSN):
+python3 get_psn_id.py <directory-containing-json-battle-data> name_for_id_mapping.json
+python3 get_psn_hours.py name_for_id_mapping.json steam_playtime_mapping.json
+
+### Important Notes
+In order to use the official Steam Web API version of the playtime extractor, you must create a .env file and provide a Steam Web API Key. An alternative DecAPI approach is commented out at the bottom of get_steam_hours.py. However, it is much slower and more inconsistent in order to limit the hits on the API.
+
+For PlayStation user's their playtime can only be retrieved from Exophase which is the only site that contains user playtime information if they registered on the website. 
+
+Playtime is only available if the user's profile is public.
+
 
 ## Analysis
 
@@ -41,7 +60,7 @@ Potential ideas:
     - [ ] Most popular secondary characters
     - [X] Some measure of "closeness of games" by looking at how many rounds are played in the average game
 - [ ] Present data more accessible format. dashboard? project page?
-- [ ] Use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
+- [X] Use T8 steam id (1pOnlineId/ 2pOnlineId) to link rank data to hours played stats (manual/ steam api)
 
 ## Contributing
 
